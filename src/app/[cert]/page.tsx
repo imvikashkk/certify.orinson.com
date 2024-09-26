@@ -21,16 +21,16 @@ const Page = ({params:{cert}}:{params:{cert:string}}) => {
         const res = await fetch(`/${cert}`)
   }
 
-  if (loading) {
-    return (
-      <section className="h-screen bg-[#211b95]  flex justify-center items-center">
-        <div className="lds-ripple">
-          <div></div>
-          <div></div>
-        </div>
-      </section>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <section className="h-screen bg-[#211b95]  flex justify-center items-center">
+  //       <div className="lds-ripple">
+  //         <div></div>
+  //         <div></div>
+  //       </div>
+  //     </section>
+  //   );
+  // }
 
   return (
     <div className="h-[100vh] w-screen bg-cover bg-center bg-[#211b95] ">
