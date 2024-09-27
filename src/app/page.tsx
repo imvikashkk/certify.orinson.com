@@ -59,7 +59,7 @@ export default function Home() {
         <form
           onSubmit={(e)=>{
             e.preventDefault();
-            router.push(`/${certificateNumber}`)
+            router.push(`/${certificateNumber.trim()}`)
             setCertificateNumber("")
           }}
           className={`relative z-10 w-full h-[30%] flex justify-center items-center transition-transform duration-500 ${

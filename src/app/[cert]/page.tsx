@@ -5,7 +5,7 @@ import LogoImg from "../../../public/logo-img.png";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const teko = Teko({
   subsets: ["latin"], // Choose the subsets you need
@@ -13,24 +13,86 @@ const teko = Teko({
   display: "swap", // Controls how the font is displayed
 });
 
-const Page = ({params:{cert}}:{params:{cert:string}}) => {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState({});
+const initialData = {
+  fullname: "",
+  email: "",
+  phone_number: "",
+  gender: "",
+  dob: "",
+  national_id_card: "",
+  national_id_card_number: "",
+  current_or_last_academic: "",
+  current_or_last_college_university: "",
+  passing_year: "",
+  job_type: "",
+  job_mode: "",
+  job_role:"",
+  stipend_salary: "",
+  start_date: "",
+  end_date: "",
+  duration: "",
+};
 
-  const handleCertificate = async (cert:string) => {
-        const res = await fetch(`/${cert}`)
+const Page = ({ params: { cert } }: { params: { cert: string } }) => {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(initialData);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleCertificate = async (cert: string) => {
+      try {
+        const res = await fetch(`https://api-certify.orinson.com/certificate/${cert}`);
+
+        const response = await res.json();
+        if (response.data) {
+          setData(response.data);
+        } else {
+          setError("Invalid Certificate!")
+          // router.replace("/");
+        }
+      } catch (error) {
+        alert("Error: Internal Issue!" )
+        // router.replace("/");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    handleCertificate(cert);
+  }, [cert, router]);
+
+  if (loading) {
+    return (
+      <section className="h-screen bg-[#211b95]  flex justify-center items-center">
+        <div className="lds-ripple">
+          <div></div>
+          <div></div>
+        </div>
+      </section>
+    );
   }
 
-  // if (loading) {
-  //   return (
-  //     <section className="h-screen bg-[#211b95]  flex justify-center items-center">
-  //       <div className="lds-ripple">
-  //         <div></div>
-  //         <div></div>
-  //       </div>
-  //     </section>
-  //   );
-  // }
+  if(error !== ""){
+    return (
+      <section className="h-screen bg-[#211b95]  flex justify-center items-center">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4">Alert</h2>
+            <p className="mb-6 text-red-600">{error}</p>
+            <button
+              className="bg-blue-500 text-white float-end px-4 py-2 rounded hover:bg-blue-600"
+              onClick={() => {setError(""); router.replace("/")}}
+            >
+              Okay
+            </button>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+
 
   return (
     <div className="h-[100vh] w-screen bg-cover bg-center bg-[#211b95] ">
@@ -70,66 +132,62 @@ const Page = ({params:{cert}}:{params:{cert:string}}) => {
             <p className="text-gray-500 text-xl font-semibold">
               Certificate Number:
             </p>
-            <p className="-mt-1 sm:mt-[3px] text-xl font-semibold">
-              WDPB-08/2012-INT-123
-            </p>
+            <p className="-mt-1 sm:mt-[3px] text-xl font-semibold">{cert}</p>
           </div>
 
           <div className="mt-2 pb-3 flex flex-col min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-2 min-[360px]:justify-evenly">
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">Name:</p>
               <p className="-mt-2 min-[360px]:mt-[3px] font-semibold">
-                Vikash Kumar Khunte
+                {data.fullname}
               </p>
             </div>
 
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">Email:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px]">imvikashkk@gmail.com</p>
+              <p className="-mt-2 min-[360px]:mt-[3px]">{data.email}</p>
             </div>
 
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">Mobile:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px]">+91755XX8XX56</p>
+              <p className="-mt-2 min-[360px]:mt-[3px]">{data.phone_number}</p>
             </div>
 
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">Gender:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px]">Male</p>
+              <p className="-mt-2 min-[360px]:mt-[3px]">{data.gender}</p>
             </div>
 
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">DOB:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px]">10/12/2003</p>
+              <p className="-mt-2 min-[360px]:mt-[3px]">{data.dob}</p>
             </div>
 
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
-              <p className="text-gray-500 text-lg">Goverment ID:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px]">UIDAI (Aadhaar)</p>
+              <p className="text-gray-500 text-lg">National ID:</p>
+              <p className="-mt-2 min-[360px]:mt-[3px]">{data.national_id_card}</p>
             </div>
 
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">ID Number:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px]">XXXXXXXX7878</p>
+              <p className="-mt-2 min-[360px]:mt-[3px]">{data.national_id_card_number}</p>
             </div>
           </div>
 
           <div className="pt-3  relative border-t flex flex-col min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-2 min-[360px]:justify-evenly border-b border-black pb-2 ">
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">Course/Branch:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px] ">B.Tech</p>
+              <p className="-mt-2 min-[360px]:mt-[3px] ">{data.current_or_last_academic}</p>
             </div>
 
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">School/College:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px]">
-                Bhilai Institute of Technology, Durg
-              </p>
+              <p className="-mt-2 min-[360px]:mt-[3px]">{data.current_or_last_college_university}</p>
             </div>
 
             <div className="flex flex-col min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-1">
               <p className="text-gray-500 text-lg">Passing Year:</p>
-              <p className="-mt-2 min-[360px]:mt-[3px]">2025</p>
+              <p className="-mt-2 min-[360px]:mt-[3px]">{data.passing_year}</p>
             </div>
 
             <div className="absolute -top-3 bg-blue-50 text-[#bb6b32]  left-[calc(50%-30px)]">
@@ -143,37 +201,42 @@ const Page = ({params:{cert}}:{params:{cert:string}}) => {
                 <div className="flex flex-col min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-4 min-[360px]:justify-evenly">
                   <div className="flex flex-col items-center ">
                     <p className="text-gray-500 text-lg">Job Type</p>
-                    <p className="-mt-1 text-center">Internship</p>
+                    <p className="-mt-1 text-center">{data.job_type}</p>
                   </div>
 
                   <div className="flex flex-col items-center ">
                     <p className="text-gray-500 text-lg">Job Mode</p>
-                    <p className="-mt-1 text-center">Remote</p>
+                    <p className="-mt-1 text-center">{data.job_mode}</p>
                   </div>
 
                   <div className="flex flex-col items-center">
-                    <p className="text-gray-500 text-lg">Job Role</p>
-                    <p className="-mt-1 text-center">Web Development</p>
+                    <p className="text-gray-500 text-lg">Job Role In</p>
+                    <p className="-mt-1 text-center">{data.job_role}</p>
                   </div>
 
-                  <div className="flex flex-col items-center">
-                    <p className="text-gray-500 text-lg">Salary/Stipned</p>
-                    <p className="-mt-1 text-center">₹5,000/Month</p>
-                  </div>
+                  {
+                    data.stipend_salary && (
+                      <div className="flex flex-col items-center">
+                      <p className="text-gray-500 text-lg">Salary/Stipned</p>
+                      <p className="-mt-1 text-center">{data.stipend_salary}</p>
+                    </div>
+                    )
+                  }
+                 
 
                   <div className="flex flex-col items-center">
                     <p className="text-gray-500 text-lg">Joining Date</p>
-                    <p className="-mt-1 text-center">12/12/2003</p>
+                    <p className="-mt-1 text-center">{data.start_date}</p>
                   </div>
 
                   <div className="flex flex-col items-center">
                     <p className="text-gray-500 text-lg">Ending Date</p>
-                    <p className="-mt-1 text-center">12/12/2003</p>
+                    <p className="-mt-1 text-center">{data.end_date}</p>
                   </div>
 
                   <div className="flex flex-col items-center">
                     <p className="text-gray-500 text-lg">Duration</p>
-                    <p className="-mt-1 text-center">4 week</p>
+                    <p className="-mt-1 text-center">{data.duration}</p>
                   </div>
                 </div>
               </div>
